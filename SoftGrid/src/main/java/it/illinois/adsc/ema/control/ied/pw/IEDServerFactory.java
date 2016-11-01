@@ -11,10 +11,7 @@ import it.illinois.adsc.ema.softgrid.common.ConfigUtil;
 import org.openmuc.openiec61850.ServiceError;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by prageethmahendra on 15/2/2016.n
@@ -64,6 +61,7 @@ public class IEDServerFactory {
                 }
                 proxyIpPorts.put(proxyNodeType.getIp(), Integer.parseInt(proxyNodeType.getPort()));
             }
+
             if (serverType.equals("IED")) {
                 Collections.sort(workerThreads);
                 System.out.println("workerThreads = " + workerThreads.size());
@@ -93,7 +91,7 @@ public class IEDServerFactory {
                         ipPort = s+":"+ ConfigUtil.GATEWAY_CC_PORT;
                     }
                     controlCenterClient = ControlCenterClient.getInstance(controlCenterContext, ipPort);
-                    controlCenterClient.startClient(proxyIpPorts);
+                    controlCenterClient.startClient();
 
                 } catch (NumberFormatException e) {
                     e.printStackTrace();

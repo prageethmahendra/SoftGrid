@@ -216,7 +216,7 @@ public class SmartPowerIEDServer implements ServerEventListener {
         switch (deviceObjectName.toUpperCase()) {
             case "TRANSFORMER":
                 return IEDType.TRANSFRMER;
-            case "GENERATOR":
+            case "GEN":
                 return IEDType.GENERATOR;
             case "SHUNT":
                 return IEDType.SHUNT;
@@ -224,7 +224,9 @@ public class SmartPowerIEDServer implements ServerEventListener {
                 return IEDType.BRANCH;
             case "BUS":
                 return IEDType.BUS;
-            default:
+            case "LOAD":
+                return IEDType.BUS;
+            default :
                 return IEDType.VIRTUAL;
         }
     }
