@@ -143,9 +143,9 @@ public class CenterPanel extends JPanel implements ExperimentListener, PropertyC
                     final ExperimentRequest experimentRequest = new ExperimentRequest();
                     experimentRequest.setEntity("CC");
                     MainPanel.getInstance().getCenterPanel().logMessage("Checking Control Center Status...!");
-                    ExperimentStatus experimentStatus = getCCStatus(experimentRequest, true);
                     experimentRequest.setGatewayPort(port);
                     experimentRequest.setGatewayIP(ip);
+                    ExperimentStatus experimentStatus = getCCStatus(experimentRequest, true);
                     if (experimentStatus != ExperimentStatus.STARTED) {
                         MainPanel.getInstance().getCenterPanel().logMessage("Control Center Status = " + experimentStatus.name());
                         MainPanel.getInstance().getCenterPanel().logMessage("Starting Control Center...!");
