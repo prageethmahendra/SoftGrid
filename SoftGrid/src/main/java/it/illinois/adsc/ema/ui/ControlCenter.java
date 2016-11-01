@@ -171,6 +171,7 @@ public class ControlCenter extends JFrame implements ActionListener, ControlCent
 
     @Override
     public boolean isLive(String ip, int port) {
+        System.out.println("is live check " + ip + "_" + port);
         ControlCenterClient controlCenterClient = ccProxyConnectionMap.get(getIPPortString(ip, port));
         if (controlCenterClient != null &&
                 controlCenterClient.getConnection() != null) {

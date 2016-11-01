@@ -5,7 +5,6 @@ import it.illinois.adsc.ema.control.center.command.Command;
 import it.illinois.adsc.ema.control.center.command.CommandParser;
 import it.illinois.adsc.ema.control.center.command.MessageFactory;
 import it.illinois.adsc.ema.control.center.experiments.CCMessageCounter;
-import it.illinois.adsc.ema.control.center.experiments.CCUserGenerator;
 import it.illinois.adsc.ema.control.center.security.CCSecurityHandler;
 import it.illinois.adsc.ema.control.ied.StatusHandler;
 import it.illinois.adsc.ema.control.ied.pw.IEDServerFactory;
@@ -38,17 +37,23 @@ public class ControlCenterClient implements ConnectionEventListener, Runnable {
     private static CCMessageCounter ccMessageCounter = new CCMessageCounter();
     private Connection clientConnection;
     public static boolean manualExperimentMode = false;
+    private String IP_ADDRESS = "192.168.0.173";
+    private int PORT = 2404;
 
-    public ControlCenterClient(Connection connection, ControlCenterContext controlCenterContext, boolean securityEnabled) {
+    public ControlCenterClient(Connection connection, ControlCenterContext controlCenterContext, boolean securityEnabled, String ip, int port) {
         clientConnection = connection;
         this.securityEnabled = securityEnabled;
         this.controlCenterContext = controlCenterContext;
+        this.IP_ADDRESS = ip;
+        this.PORT = port;
         init();
     }
 
-    private ControlCenterClient(ControlCenterContext controlCenterContext) {
+    private ControlCenterClient(ControlCenterContext controlCenterContext, String ip, int port) {
         this.securityEnabled = true;
         this.controlCenterContext = controlCenterContext;
+        this.IP_ADDRESS = ip;
+        this.PORT = port;
         init();
     }
 
@@ -71,7 +76,14 @@ public class ControlCenterClient implements ConnectionEventListener, Runnable {
     public static ControlCenterClient getInstance(ControlCenterContext controlCenterContext, String ipPort) {
         ControlCenterClient instance = instanceMap.get(ipPort);
         if (instance == null) {
-            instance = new ControlCenterClient(controlCenterContext == null ? new ControlCenterContext(ConfigUtil.CONFIG_PEROPERTY_FILE) : controlCenterContext);
+            String[] elements = ipPort.split(":");
+            if (elements.length != 2) {
+                return null;
+            } else {
+                String ip = elements[0];
+                int port = Integer.valueOf(elements[1]);
+                instance = new ControlCenterClient((controlCenterContext == null ? new ControlCenterContext(ConfigUtil.CONFIG_PEROPERTY_FILE) : controlCenterContext), ip, port);
+            }
             instanceMap.put(ipPort, instance);
         }
         return instance;
@@ -93,7 +105,7 @@ public class ControlCenterClient implements ConnectionEventListener, Runnable {
 
     @Override
     public void run() {
-        startClient(IEDServerFactory.proxyIpPorts);
+        startClient();
         if (manualExperimentMode) {
             periodicInterrogation();
         }
@@ -104,94 +116,80 @@ public class ControlCenterClient implements ConnectionEventListener, Runnable {
 //        }
     }
 
-    public void startClient(HashMap<String, Integer> proxyIpPort) {
-        if (proxyIpPort == null || proxyIpPort.isEmpty()) {
-            printUsage();
-            return;
-        }
+    public void startClient() {
+//        if (proxyIpPort == null || proxyIpPort.isEmpty()) {
+//            printUsage();
+//            return;
+//        }
         ClientSap clientSap = new ClientSap();
         if (clientConnection == null) {
-            for (String ipAddress : proxyIpPort.keySet()) {
-                System.out.println("Attempt_1 : Connecting.....: " + ipAddress + " Port : " + proxyIpPort.get(ipAddress));
+//            for (String ipAddress : proxyIpPort.keySet()) {
+            System.out.println("Attempt_1 : Connecting.....: " + IP_ADDRESS + " Port : " + PORT);
 
-                Runtime.getRuntime().addShutdownHook(new Thread() {
-                    @Override
-                    public void run() {
-                        if (PROXY_CONNECTION_MAP != null) {
-                            for (Connection connection : PROXY_CONNECTION_MAP.values()) {
-                                connection.close();
-                            }
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
+                public void run() {
+                    if (PROXY_CONNECTION_MAP != null) {
+                        for (Connection connection : PROXY_CONNECTION_MAP.values()) {
+                            connection.close();
                         }
                     }
-                });
-                InetAddress address = null;
-                boolean error = false;
+                }
+            });
+            InetAddress address = null;
+            boolean error = false;
+            try {
+                address = InetAddress.getByName(ConfigUtil.IP);
+            } catch (UnknownHostException e) {
+                System.out.println("Unknown Host: " + IP_ADDRESS);
+                error = true;
+            }
+
+            if (!error) {
                 try {
-                    address = InetAddress.getByName(ConfigUtil.IP);
-                } catch (UnknownHostException e) {
-                    System.out.println("Unknown Host: " + ipAddress);
+                    clientConnection = clientSap.connect(address, PORT);//, InetAddress.getByName("10.0.1.8"), 2434);
+                    clientConnection.startDataTransfer(this, 6000);
+                    PROXY_CONNECTION_MAP.put(IP_ADDRESS.split("\\.")[3], clientConnection);
+                } catch (IOException e) {
+                    System.out.println("Unable To Connect To Remote Host: " + IP_ADDRESS + "." + ConfigUtil.GATEWAY_CC_PORT);
                     error = true;
-                }
-
-                if (!error) {
                     try {
-                        clientConnection = clientSap.connect(address, ConfigUtil.GATEWAY_CC_PORT == -1 ? proxyIpPort.get(ipAddress) : ConfigUtil.GATEWAY_CC_PORT);//, InetAddress.getByName("10.0.1.8"), 2434);
-                        clientConnection.startDataTransfer(this, 6000);
-                        PROXY_CONNECTION_MAP.put(ipAddress.split("\\.")[3], clientConnection);
-                    } catch (IOException e) {
-                        System.out.println("Unable To Connect To Remote Host: " + ipAddress + "." + ConfigUtil.GATEWAY_CC_PORT);
-                        error = true;
-                        try {
-                            clientConnection.close();
-                        } catch (Exception e1) {
-                            System.out.println("Error in connection close.");
-                        }
-                        clientConnection = null;
-                    } catch (TimeoutException e2) {
-                        e2.printStackTrace();
-                        error = true;
-                        try {
-                            clientConnection.close();
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
-                        clientConnection = null;
+                        clientConnection.close();
+                    } catch (Exception e1) {
+                        System.out.println("Error in connection close.");
                     }
-                }
-                if (error) {
+                    clientConnection = null;
+                } catch (TimeoutException e2) {
+                    e2.printStackTrace();
+                    error = true;
                     try {
-                        StatusHandler.statusChanged("CC" + StatusHandler.ERROR);
+                        clientConnection.close();
                     } catch (Exception e1) {
                         e1.printStackTrace();
-                        try {
-                            clientConnection.close();
-                        } catch (Exception e2) {
-                            e1.printStackTrace();
-                        }
-                        clientConnection = null;
                     }
-                    return;
+                    clientConnection = null;
                 }
+            }
+            if (error) {
+                try {
+                    StatusHandler.statusChanged("CC" + StatusHandler.ERROR);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                    try {
+                        clientConnection.close();
+                    } catch (Exception e2) {
+                        e1.printStackTrace();
+                    }
+                    clientConnection = null;
+                }
+                return;
             }
         }
         if (securityEnabled) {
             cCSecurityHandler = CCSecurityHandler.getInstance();
-//                runCommand("interrogation 53");
-            if (manualExperimentMode) {
-//                    periodicInterrogation();
-                CCUserGenerator.main(null);
-            }
-//                startProfiler(clientConnection);
         }
         System.out.println("Successfully Connected. ");
         String line;
-//          boolean state = false;
-//          boolean interrogation = true;
-//          int count = 0;
-//          int iedAddress = 1;
-//          int commonAddress = 65535;
-//          received = true;
-
         System.out.println("controlCenterContext.isRemoteInteractive() = " + controlCenterContext.isRemoteInteractive());
         if (!controlCenterContext.isRemoteInteractive()) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
