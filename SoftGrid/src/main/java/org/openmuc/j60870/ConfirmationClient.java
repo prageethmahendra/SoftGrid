@@ -23,30 +23,30 @@ public class ConfirmationClient implements ConnectionEventListener {
     }
 
     private void init() {
-        try {
-
-            Socket clientSocket = null;
-            if (encrypted) {
-                System.setProperty("javax.net.ssl.keyStore", IEC60870104Server.KEY_STORE);
-                System.setProperty("javax.net.ssl.keyStorePassword", "raspberry");
-                System.setProperty("javax.net.ssl.trustStore", IEC60870104Server.CER_STORE);
-                System.getProperty("javax.net.ssl.trustStorePassword","prageeth");
-
-                SSLSocketFactory ssf = (SSLSocketFactory) SSLSocketFactory.getDefault();
-                clientSocket = ssf.createSocket(ip, port);
-            } else {
-                clientSocket = SocketFactory.getDefault().createSocket(ip, port);
-            }
-            ccConnection = new Connection(clientSocket, null, new ConnectionSettings());
-            ccConnection.startDataTransfer(this, TIMEOUT);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        }
-        if (ccConnection == null) {
-            reset();
-        }
+//        try {
+//
+//            Socket clientSocket = null;
+//            if (encrypted) {
+//                System.setProperty("javax.net.ssl.keyStore", IEC60870104Server.KEY_STORE);
+//                System.setProperty("javax.net.ssl.keyStorePassword", "raspberry");
+//                System.setProperty("javax.net.ssl.trustStore", IEC60870104Server.CER_STORE);
+//                System.getProperty("javax.net.ssl.trustStorePassword","prageeth");
+//
+//                SSLSocketFactory ssf = (SSLSocketFactory) SSLSocketFactory.getDefault();
+//                clientSocket = ssf.createSocket(ip, port);
+//            } else {
+//                clientSocket = SocketFactory.getDefault().createSocket(ip, port);
+//            }
+//            ccConnection = new Connection(clientSocket, null, new ConnectionSettings());
+//            ccConnection.startDataTransfer(this, TIMEOUT);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (TimeoutException e) {
+//            e.printStackTrace();
+//        }
+//        if (ccConnection == null) {
+//            reset();
+//        }
 //        while (true) {
 //            try {
 //                Thread.sleep(1000);

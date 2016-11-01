@@ -18,7 +18,6 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.openmuc.j60870.IEC60870104Server;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -396,7 +395,7 @@ public class SPMainFrame extends JFrame implements ActionListener, WindowListene
                     SmartPowerControler.initiate(args);
                 } else if (ConfigUtil.SERVER_TYPE.equals("ACM")) {
                     String[] args = {ConfigUtil.SERVER_TYPE};
-                    IEC60870104Server.main(args);
+//                    IEC60870104Server.main(args);
                 }
                 stateTextArea.setText("Gateway Started..!" +
                         "\nGateway Server Protocol : IEC 60870-5-104 " +
@@ -470,20 +469,21 @@ public class SPMainFrame extends JFrame implements ActionListener, WindowListene
                         type = data[3];
                         // select the type
                         ArrayList<MonitorConfig> newMonitors = new ArrayList<MonitorConfig>();
+                        ArrayList<MonitorConfig> removableQueries = new ArrayList<MonitorConfig>();
                         for (MonitorConfig monitorConfig : monitorConfigs) {
                             if (monitorConfig.getDeviceType().equalsIgnoreCase(type)) {
                                 if (monitorConfig.getKeyValueMap().isEmpty()) {
-                                    found = true;
-                                    for (MonitorConfig newMonitor : newMonitors) {
-                                        MonitorConfig monitorConfig1 = new MonitorConfig();
-                                        monitorConfig1.setDeviceType(monitorConfig.getDeviceType());
-                                        monitorConfig1.setKeyValueMap((HashMap<String, String>) monitorConfig.getKeyValueMap().clone());
-//                                        monitorConfig1.getKeyValueMap().put(key, data[i + 1]);
-                                        monitorConfig1.setVariable(monitorConfig.getVariable());
-                                        monitorConfig1.setXySeries((XYSeries) monitorConfig.getXySeries().clone());
-                                        monitorConfig1.setSeriesName(monitorConfig1.toString());
-                                        newMonitors.add(monitorConfig1);
-                                    }
+                                  found = true;
+//                                    for (MonitorConfig newMonitor : newMonitors) {
+//                                        MonitorConfig monitorConfig1 = new MonitorConfig();
+//                                        monitorConfig1.setDeviceType(monitorConfig.getDeviceType());
+//                                        monitorConfig1.setKeyValueMap((HashMap<String, String>) monitorConfig.getKeyValueMap().clone());
+////                                      monitorConfig1.getKeyValueMap().put(key, data[i + 1]);
+//                                        monitorConfig1.setVariable(monitorConfig.getVariable());
+//                                        monitorConfig1.setXySeries((XYSeries) monitorConfig.getXySeries().clone());
+//                                        monitorConfig1.setSeriesName(monitorConfig1.toString());
+//                                        newMonitors.add(monitorConfig1);
+//                                    }
                                 } else {
                                     for (String key : monitorConfig.getKeyValueMap().keySet()) {
                                         found = false;

@@ -5,6 +5,7 @@ import org.jfree.data.xy.XYSeries;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by prageethmahendra on 5/5/2016.
@@ -15,6 +16,7 @@ public class MonitorConfig {
     private String variable;
     private String seriesName;
     private XYSeries xySeries;
+    private List<MonitorConfig> monitorConfigs;
 
     public MonitorConfig() {
         super();
@@ -70,6 +72,14 @@ public class MonitorConfig {
         this.variable = variable;
     }
 
+    public List<MonitorConfig> getMonitorConfigs() {
+        return monitorConfigs;
+    }
+
+    public void setMonitorConfigs(List<MonitorConfig> monitorConfigs) {
+        this.monitorConfigs = monitorConfigs;
+    }
+
     @Override
     protected Object clone() {
         MonitorConfig monitorConfig = new MonitorConfig();
@@ -88,4 +98,5 @@ public class MonitorConfig {
         }
         return str;
     }
+
 }
