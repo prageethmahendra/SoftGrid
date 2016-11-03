@@ -10,19 +10,14 @@ import datetime
 csvpath = ""
 resultMainpath = ""
 lib_path = os.path.abspath('..\\pypw')
-experimentNo = 0
-deviceCountIncrementAmmount = 10
-duration = 60.0
 sys.path.append(lib_path)
 generate = 1
 summery = 1
-plot = 0
-experimentCount = 100
 startTime = datetime.datetime.now()
 import pypwconst
 import pypw
 
-
+# This method will write the header and data sections to a given file.
 def writeToFile(fileName, Header, Data):
     with open(csvpath + fileName, 'w') as target:
         column = str(Header)
@@ -37,8 +32,8 @@ def writeToFile(fileName, Header, Data):
             target.write(data)
             target.write("\n")
 
-
-def processFrequencyCSV(type):
+# this method will evaluate the csv file with PowerWorld results and identify any limit violations
+def processViolationCSV(type):
     if (summery is 0):
         return
     resultPath = logPath + "ViolationCount.csv"
@@ -106,7 +101,7 @@ def processFrequencyCSV(type):
                 if type is "UF" or type is "OV20" or type is "BranchLimit":
                     os.remove(csvpath + filename)
 
-
+# Initialize basic configurations
 PW_FILE = "%s\\%s" % (os.getcwd(), "..\\..\\casefiles\\37Bus\\GSO_37Bus_dm.PWB")
 loadrank = []
 mainExperimentPath = "%s\\%s" % (os.getcwd(), "..\\..\\auxFile\\")
@@ -117,13 +112,13 @@ print sys.argv[1]
 count = 0
 # startTime = datetime.datetime.now()#.strftime('%H:%M:%S:%f')
 # startTime = startTime + datetime.timedelta(seconds=10)
-
 sa = pypw.SimAuto()
 sa.Connect(sys.argv[1])
 TEMP_PW_FILE = PW_FILE[:-4] + "_Monitor.PWB"
 if (os.path.exists(TEMP_PW_FILE)):
     os.remove(TEMP_PW_FILE)
 shutil.copy(PW_FILE, TEMP_PW_FILE)
+# Scan the mainExperimtnPath and process the transient state changes for commands executed
 while (1):
     count = count + 1
     if (not os.path.exists(stateFile)):
@@ -201,16 +196,15 @@ while (1):
                     sa._SaveState()
                     sa.SaveCase(TEMP_PW_FILE)
 
-            processFrequencyCSV("OF")
-            processFrequencyCSV("UF")
-            processFrequencyCSV("BranchLimit")
-            processFrequencyCSV("UV5")
-            processFrequencyCSV("UV20")
-            processFrequencyCSV("OV5")
-            processFrequencyCSV("OV20")
+            processViolationCSV("OF")
+            processViolationCSV("UF")
+            processViolationCSV("BranchLimit")
+            processViolationCSV("UV5")
+            processViolationCSV("UV20")
+            processViolationCSV("OV5")
+            processViolationCSV("OV20")
             # processFrequencyCSV("Incomplete")
             # processFrequencyCSV("UnservedLoad")
-    print "new iteration"
+    # print "new python iteration"
     time.sleep(0.01)
-if plot is 1:
-    generateSummeryComparisonPlots()
+print "Python process killed...!"

@@ -69,7 +69,7 @@ public class OperatorPanel extends JPanel implements ActionListener {
         icon = new ImageIcon(newimg);
         stopButton.setIcon(icon);
 
-      img = new ImageIcon(ImageIO.read(getClass().getClassLoader().getResourceAsStream("reset-xxl.png"))).getImage();
+        img = new ImageIcon(ImageIO.read(getClass().getClassLoader().getResourceAsStream("reset-xxl.png"))).getImage();
 //        img = new ImageIcon("..\\ControlCenter\\images\\reset-xxl.png").getImage();
         newimg = img.getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
         icon = new ImageIcon(newimg);
@@ -125,7 +125,12 @@ public class OperatorPanel extends JPanel implements ActionListener {
                         experimentRequest.setExperimentType(ExperimentType.RESET);
                         experimentRequest.setServerName("My Service");
                         experimentResponse = softGridService.changeExperimentState(experimentRequest);
-                        MainPanel.getInstance().getCenterPanel().logMessage("experimentResponse = " + experimentResponse);
+                        if (experimentResponse != null) {
+                            MainPanel.getInstance().getCenterPanel().logMessage("Valid Service Connection...!");
+                        } else {
+                            MainPanel.getInstance().getCenterPanel().logMessage("No Response Received...!\n" +
+                                    "[ERROR]Possible cause [Server Not Started...!]");
+                        }
                         serverStarted = experimentResponse == null;
                         runStatusWorker(experimentRequest, serverStarted);
                     } catch (Exception e1) {

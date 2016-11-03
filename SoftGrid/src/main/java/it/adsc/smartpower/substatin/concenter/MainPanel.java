@@ -81,7 +81,6 @@ public class MainPanel extends JPanel implements ExperimentListener {
     }
 
     public Action bind(String name, final Action action, String iconUrl) throws IOException {
-        System.out.println("iconUrl = " + iconUrl);
         ImageIcon img = iconUrl == null ? null : new ImageIcon(
                 ImageIO.read(getClass().getClassLoader().getResourceAsStream(iconUrl)));
         AbstractAction newAction = new AbstractAction(name, img) {

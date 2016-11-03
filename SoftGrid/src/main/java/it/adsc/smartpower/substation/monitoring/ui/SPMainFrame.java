@@ -321,7 +321,7 @@ public class SPMainFrame extends JFrame implements ActionListener, WindowListene
         SwingWorker iedWorker = new SwingWorker() {
             @Override
             protected Object doInBackground() throws Exception {
-                System.out.println("Operation ...1");
+                System.out.println("Starting IED initialization...!");
                 resultTabbedPane.add(logAreaScrollPane, "IED Log");
                 queryScrolPane.getViewport().add(queryTextArea, null);
                 messageHandler.addLogMessage("Initialize Power World...DONE");
@@ -338,7 +338,7 @@ public class SPMainFrame extends JFrame implements ActionListener, WindowListene
                 SmartPowerControler.setIEDLogEventListener(SPMainFrame.this);
                 executeMonitorQuery();
                 startPython();
-                System.out.println("Operation ...34");
+                System.out.println("All Init Operations are executed...!");
                 SmartPowerControler.initiate(args);
                 try {
                     dataFileWriter = new BufferedWriter(new FileWriter(new File(ConfigUtil.EXP_DATA_FILE)));

@@ -23,6 +23,7 @@ public class SmartPowerControler {
     }
 
     public static void initiate(String[] args) {
+        StatusHandler.reset();
         try {
             StatusHandler.statusChanged("NOT_STARTED");
         } catch (Exception e) {
@@ -52,7 +53,7 @@ public class SmartPowerControler {
                 e.printStackTrace();
             }
         }
-        System.out.println("Operation ...5");
+        System.out.println("Initialization Complete ...!");
 
     }
 

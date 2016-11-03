@@ -67,14 +67,14 @@ public class SmartPowerIEDServer implements ServerEventListener {
         try {
             List<ServerSap> serverSaps = null;
             try {
-                System.out.println(pwModelDetails.getSclFileName());
+                logger.info(pwModelDetails.getSclFileName());
                 serverSaps = ServerSap.getSapsFromSclFile(pwModelDetails.getSclFileName());
             } catch (SclParseException e) {
                 logger.severe("Error parsing SCL/ICD file: " + e.getMessage());
                 e.printStackTrace();
                 return;
             }
-            System.out.println("pwModelDetails.getIpAddress() = " + pwModelDetails.getIpAddress());
+            logger.info("pwModelDetails.getIpAddress() = " + pwModelDetails.getIpAddress());
             serverSap = serverSaps.get(0);
             serverSap.setPort(pwModelDetails.getPortNumber());
 
@@ -98,7 +98,6 @@ public class SmartPowerIEDServer implements ServerEventListener {
                     if (serverSap != null) {
                         serverSap.stop();
                     }
-                    logger.severe("Server was stopped.");
                     logger.info("Server was stopped");
                 }
             });
@@ -183,8 +182,7 @@ public class SmartPowerIEDServer implements ServerEventListener {
                 synchronized (logger) {
                     if (ConfigUtil.MANUAL_EXPERIMENT_MODE) {
                         // if this string is not printed in the log file,
-                        logger.severe(sb.toString());
-                        System.out.println(sb.toString());
+                        logger.info(sb.toString());
                     }
                 }
                 sb = new StringBuffer("");
@@ -204,7 +202,6 @@ public class SmartPowerIEDServer implements ServerEventListener {
         if (logEventListener != null) {
             String logString = "IED : " + type.name() + " : " + id + " is Started...!";
             logEventListener.logEvent(logString);
-            System.out.println("logString = " + logString);
         }
     }
 
@@ -239,9 +236,9 @@ public class SmartPowerIEDServer implements ServerEventListener {
         }
         // suppress the logging output to the console
         logger = Logger.getLogger("IED");
-        logger.setLevel(Level.SEVERE);
+        logger.setLevel(Level.INFO);
         try {
-            fileTxt = new FileHandler(ConfigUtil.LOG_FILE, 1000000, 2);
+            fileTxt = new FileHandler(ConfigUtil.LOG_FILE, 500000, 2);
 
         } catch (IOException e) {
             e.printStackTrace();

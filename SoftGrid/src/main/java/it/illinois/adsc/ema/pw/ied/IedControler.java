@@ -234,7 +234,7 @@ public class IedControler implements IedControlAPI {
         }
         // suppress the logging output to the console
         logger = Logger.getLogger("PW");
-        logger.setLevel(Level.SEVERE);
+        logger.setLevel(Level.INFO);
         try {
             fileTxt = new FileHandler(ConfigUtil.LOG_FILE +"PW");
         } catch (IOException e) {

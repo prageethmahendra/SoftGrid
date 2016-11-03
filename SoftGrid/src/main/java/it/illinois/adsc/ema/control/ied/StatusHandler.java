@@ -84,10 +84,8 @@ public class StatusHandler {
                     }
                 }
             }
-            FileWriter fw = new FileWriter(file);
-            fw.write("\n");
-            fw.close();
-        } catch (IOException e) {
+            file.delete();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

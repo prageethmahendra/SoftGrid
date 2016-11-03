@@ -75,7 +75,7 @@ public class TestbedController {
                 try {
                     // for source code execution
 
-                    File file = new File(".\\resources\\");
+                    File file = new File(".\\");
                     boolean found = false;
                     String jarFileName = "SoftGrid_v1.0.6-jar-with-dependencies.jar";
                     if (!file.exists()) {
